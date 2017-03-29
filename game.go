@@ -11,11 +11,11 @@ import (
 	"engo.io/engo/common"
 )
 
-type Scene struct{
+type Scene struct {
 	backgroundColor *color.RGBA
-	swarmSystem *SwarmSystem
-	sim Simulator
-	world *ecs.World
+	swarmSystem     *SwarmSystem
+	sim             Simulator
+	world           *ecs.World
 }
 
 func (*Scene) Preload() {}
@@ -39,13 +39,13 @@ type StaticEntity struct {
 func randomColor(contrastTo *color.RGBA) *color.RGBA {
 	randByte := func() uint8 { return uint8(rand.Intn(256)) }
 	colorVal := func(v uint8) float64 { return float64(v) / 255 }
-	getLuminance := func (c *color.RGBA) float64 {
-		return colorVal(c.R) * 0.3 + colorVal(c.G) * 0.59 + colorVal(c.B) * 0.11
+	getLuminance := func(c *color.RGBA) float64 {
+		return colorVal(c.R)*0.3 + colorVal(c.G)*0.59 + colorVal(c.B)*0.11
 	}
 	ctl := getLuminance(contrastTo)
 	for {
 		c := color.RGBA{randByte(), randByte(), randByte(), 255}
-		if math.Abs(getLuminance(&c) - ctl) > 0.3 {
+		if math.Abs(getLuminance(&c)-ctl) > 0.3 {
 			return &c
 		}
 	}
@@ -61,7 +61,7 @@ func (s *Scene) addActor(w *ecs.World, actor *Actor) {
 	}
 	actorEntity.RenderComponent = &common.RenderComponent{
 		Drawable: common.ComplexTriangles{
-			Points: []engo.Point{{-0.25, 0.7}, {0, 0}, {0.25, 0.7}, },
+			Points: []engo.Point{{-0.25, 0.7}, {0, 0}, {0.25, 0.7}},
 		},
 		Color: randomColor(s.backgroundColor),
 	}
@@ -84,7 +84,7 @@ func (s *Scene) addStatic(w *ecs.World, static *Static) {
 	staticEntity.BasicEntity = &basicEntity
 	staticEntity.SpaceComponent = &common.SpaceComponent{
 		Position: engo.Point{float32(static.PosX), float32(static.PosY)},
-		Width: 10, Height: 10,
+		Width:    10, Height: 10,
 	}
 	staticEntity.RenderComponent = &common.RenderComponent{
 		Drawable: common.Circle{}, Color: &color.RGBA{180, 180, 180, 255},
@@ -127,7 +127,7 @@ func (*Scene) Type() string {
 
 type SwarmSystem struct {
 	entities []*ActorEntity
-	sim Simulator
+	sim      Simulator
 }
 
 func (s *SwarmSystem) Add(shape *ActorEntity) {

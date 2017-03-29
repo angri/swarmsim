@@ -5,7 +5,6 @@ import (
 	"math/rand"
 )
 
-
 type Simulator interface {
 	SetWorld(World)
 	Tick(float64)
@@ -30,9 +29,9 @@ func (a *Static) GetPos() (x, y float64) {
 }
 
 type Actor struct {
-	PosX float64
-	PosY float64
-	Heading float64
+	PosX        float64
+	PosY        float64
+	Heading     float64
 	TargetAngle float64
 
 	attractor Emitter
@@ -52,7 +51,7 @@ func (a *Actor) ProbeRepulsingField(x, y float64) (fx, fy float64) {
 	if distance > minDistanceNoticeable {
 		return 0, 0
 	}
-	scalarNorm := (minDistanceNoticeable / distance - 1) * fieldScalingFactor
+	scalarNorm := (minDistanceNoticeable/distance - 1) * fieldScalingFactor
 	return dx * scalarNorm, dy * scalarNorm
 }
 
@@ -82,7 +81,7 @@ func (a *Actor) PlanAhead() {
 		fx += rfx
 		fy += rfy
 	}
-	direction := math.Atan2(fy, fx) / math.Pi * 180 + 90
+	direction := math.Atan2(fy, fx)/math.Pi*180 + 90
 	for direction < 0 {
 		direction += 360
 	}
@@ -98,7 +97,7 @@ func (a *Actor) SetAttractor(e Emitter) {
 }
 
 type Sim struct {
-	world World
+	world  World
 	actors []*Actor
 }
 
@@ -111,8 +110,8 @@ func (s *Sim) SetWorld(w World) {
 	statics := make([]*Static, 100)
 	for i := range statics {
 		angle := (math.Pi * 2.0 / float64(len(statics))) * float64(i)
-		sx := cx + math.Hypot(cx, cy) * math.Sin(angle)
-		sy := cy + math.Hypot(cx, cy) * math.Cos(angle)
+		sx := cx + math.Hypot(cx, cy)*math.Sin(angle)
+		sy := cy + math.Hypot(cx, cy)*math.Cos(angle)
 		st := &Static{sx, sy}
 		statics[i] = st
 		w.StaticSpawned(st)
@@ -121,8 +120,8 @@ func (s *Sim) SetWorld(w World) {
 	s.actors = make([]*Actor, 6)
 	for i := range s.actors {
 		a := new(Actor)
-		a.PosX = float64(rand.Intn(int(cx * 2 + 1)))
-		a.PosY = float64(rand.Intn(int(cy * 2 + 1)))
+		a.PosX = float64(rand.Intn(int(cx*2 + 1)))
+		a.PosY = float64(rand.Intn(int(cy*2 + 1)))
 		a.Heading = float64(rand.Intn(360))
 		s.actors[i] = a
 		for _, st := range statics {
@@ -132,9 +131,9 @@ func (s *Sim) SetWorld(w World) {
 
 	for i, a := range s.actors {
 		if i == 0 {
-			a.SetAttractor(s.actors[len(s.actors) - 1])
+			a.SetAttractor(s.actors[len(s.actors)-1])
 		} else {
-			a.SetAttractor(s.actors[i - 1])
+			a.SetAttractor(s.actors[i-1])
 		}
 		a.SetAttractor(attr)
 		for j, aa := range s.actors {
@@ -163,13 +162,13 @@ func (s *Sim) Tick(timePassed float64) {
 		if aba > maxDegrees {
 			aba = maxDegrees
 		}
-		if aba < - maxDegrees {
-			aba = - maxDegrees
+		if aba < -maxDegrees {
+			aba = -maxDegrees
 		}
 		a.Heading += aba
 
 		dx := math.Sin(a.Heading / 180 * math.Pi)
-		dy := - math.Cos(a.Heading / 180 * math.Pi)
+		dy := -math.Cos(a.Heading / 180 * math.Pi)
 		a.PosX += dx * moved
 		a.PosY += dy * moved
 	}
